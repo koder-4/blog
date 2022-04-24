@@ -24,7 +24,7 @@ metadata = MetaData()
 session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
 
-
+# Table for links between articles and tags
 articles_tags = Table('articles_tags', Base.metadata,
                       Column('tag_id', ForeignKey('tags.id')),
                       Column('article_id', ForeignKey('articles.id')))
@@ -76,12 +76,15 @@ class Tag(Base):
     articles = relationship("Article", secondary=articles_tags, back_populates="tags")
 
 
+# To insert some data to the database
 def insert_test_data():
+    # Recreate tables
     Base.metadata.drop_all()
     Base.metadata.create_all()
 
     session = Session()
 
+    # Adding users
     john = User(username='John Doe', password='123', is_author=True)
     jane = User(username='Jane Doe', password='1234', is_author=True)
     lucifer = User(username='Lucifer', password='666', is_author=False)
@@ -92,6 +95,7 @@ def insert_test_data():
 
     session.commit()
 
+    # Adding tags
     python = Tag(tag='python')
     linux = Tag(tag='linux')
     windows = Tag(tag='windows')
@@ -101,6 +105,7 @@ def insert_test_data():
 
     session.commit()
 
+    # Adding articles
     python_linux = Article(author=john.id, header='Python on linux',
                            text='Using python on linux is awesome!!!', tags=[linux, python])
     python_windows = Article(author=jane.id, header='Python on windows',
@@ -112,6 +117,7 @@ def insert_test_data():
 
     session.commit()
 
+    # Adding comments
     comments = [
         Comment(author=gates.id, article=python_linux.id, text='Never used linux, what is it?'),
         Comment(author=jane.id, article=python_linux.id, text='Going to write my own article'),
